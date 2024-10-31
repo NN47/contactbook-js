@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Контактная книга</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 500px; margin: auto; padding: 20px; }
+        input, button { margin: 5px 0; padding: 10px; width: 100%; }
+        .contact { padding: 10px; border-bottom: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Контактная книга</h1>
+        <input type="text" id="name" placeholder="Имя">
+        <input type="text" id="phone" placeholder="Телефон">
+        <input type="email" id="email" placeholder="Email (необязательно)">
+        <button onclick="addContact()">Добавить контакт</button>
+        
+        <h2>Список контактов</h2>
+        <div id="contacts"></div>
+    </div>
+
+    <script>
+        const contactsContainer = document.getElementById("contacts");
+
+        function loadContacts() {
+            const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
+            contactsContainer.innerHTML = contacts.map((contact, index) => `
+                <div class="contact">
+                    <strong>Имя:</strong> ${contact.name} <br>
+                    <strong>Телефон:</strong> ${contact.phone} <br>
+                    <strong>Email:</strong> ${contact.email || 'N/A'} <br>
+                    <button onclick="removeContact(${index})">Удалить</button>
+                </div>
+            `).join("");
+        }
+
+        function addContact() {
+            const name = document.getElementById("name").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+            const email = document.getElementById("email").value.trim();
+
+            if (!name || !phone) {
+                alert("Имя и телефон обязательны для добавления контакта.");
+                return;
+            }
+
+            const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
+            contacts.push({ name, phone, email });
+            localStorage.setItem("contacts", JSON.stringify(contacts));
+            
+            document.getElementById("name").value = "";
+            document.getElementById("phone").value = "";
+            document.getElementById("email").value = "";
+
+            loadContacts();
+        }
+
+        function removeContact(index) {
+            const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
+            contacts.splice(index, 1);
+            localStorage.setItem("contacts", JSON.stringify(contacts));
+            loadContacts();
+        }
+
+        // Загрузка контактов при загрузке страницы
+        window.onload = loadContacts;
+    </script>
+</body>
+</html>
